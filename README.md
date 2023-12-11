@@ -83,4 +83,4 @@ PATH=$PATH:< your path>
 kubectl kubeplugin kube-system get pods 
 ```
 
-![result](https://github.com/cipgen/scripts/blob/main/img/kubeplugin-result.png)
+![result](https://github.com/cipgen/mod5_task1/blob/main/scripts/img/kubeplugin-result.png)
