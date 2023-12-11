@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Function to display help information
+show_help() {
+  echo "Usage: kubectl stats <namespace> <command> <resource-type>"
+  echo ""
+  echo "This plugin for kubectl retrieves and displays resource usage statistics"
+  echo "for specified Kubernetes resources."
+  echo ""
+  echo "Arguments:"
+  echo "  namespace      Kubernetes namespace"
+  echo "  command        kubectl command to retrieve resources (e.g., get)"
+  echo "  resource-type  Type of the resource (e.g., pods, deployments)"
+}
+
+# Check for --help, -h, or no arguments
+if [[ "$1" == "--help" || "$1" == "-h" || "$#" -eq 0 ]]; then
+  show_help
+  exit 0
+fi
+
+# Ensure that the correct number of arguments is provided
+if [ "$#" -ne 3 ]; then
+    echo "Incorrect number of arguments provided."
+    echo ""
+    show_help
+    exit 1
+fi
+
+# Assign command-line arguments
+NAMESPACE=$1
+COMMAND=$2
+RESOURCE_TYPE=$3
+
+# Header for the output table
+echo "Resource Type    Namespace       Name                                    CPU     Memory"
+echo "------------------------------------------------------------------------------------------"
+
+# Retrieve resource usage statistics from Kubernetes
+kubectl $COMMAND $RESOURCE_TYPE -n $NAMESPACE | tail -n +2 | while read line
+do
+  # Extract CPU and memory usage from the output
+  NAME=$(echo $line | awk '{print $1}')
+  CPU=$(echo $line | awk '{print $2}')
+  MEMORY=$(echo $line | awk '{print $3}')
+
+  # Format and output the statistics to the console
+  printf "%-15s %-15s %-40s %-7s %s\n" $RESOURCE_TYPE $NAMESPACE $NAME $CPU $MEMORY
+done
